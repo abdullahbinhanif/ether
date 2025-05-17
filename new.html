@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ওয়ালেট ট্রানজেকশন দেখুন</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            padding: 12px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #388e3c;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #eaeaea;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1rem;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input, button {
+                width: 100%;
+            }
+
+            table th, table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            input, button {
+                padding: 10px;
+            }
+
+            table th, table td {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>মেটামাস্ক ওয়ালেট ট্রানজেকশন</h1>
+        <form id="walletForm">
+            <label for="walletAddress">ওয়ালেট অ্যাড্রেস লিখুন:</label>
+            <input type="text" id="walletAddress" name="walletAddress" placeholder="এখানে ওয়ালেট অ্যাড্রেস পেস্ট করুন" required>
+            <button type="submit">লেনদেন দেখুন</button>
+        </form>
+
+        <div class="table-responsive">
+            <table id="transactionTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>লেনদেনের হ্যাশ</th>
+                        <th>প্রেরক</th>
+                        <th>গ্রহণকারী</th>
+                        <th>টোকেন</th>
+                        <th>গ্যাস ফি</th>
+                        <th>সময়</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionList">
+                    <!-- ট্রানজেকশন লিস্ট এখানে দেখানো হবে -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created by Abdullah Abir &copy; 2025</p>
+    </footer>
+
+    <script>
+        document.getElementById('walletForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const walletAddress = document.getElementById('walletAddress').value;
+            const transactionTable = document.getElementById('transactionTable');
+            const transactionList = document.getElementById('transactionList');
+            transactionList.innerHTML = '';
+            transactionTable.style.display = 'none';
+
+            const MORALIS_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImY1MzZkYTQxLWFlYzctNGNjMy1iYzRhLTQ3OTZkOGI5NjUzYiIsIm9yZ0lkIjoiNDQ3NTg4IiwidXNlcklkIjoiNDYwNTEzIiwidHlwZUlkIjoiYTQwNzNkMWMtNzdiMi00OTY5LWJhYWUtNGM1YmI5NzBlNzdiIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NDc0OTYzNjksImV4cCI6NDkwMzI1NjM2OX0.b8boCmDWjaGm-ReXIJqu2eSdKxLAMku8sg-b-rtT638'; // 👉 এখানে তোমার API KEY বসাও
+
+            const chains = [
+                { name: 'Ethereum', id: 'eth', explorer: 'https://etherscan.io/tx/' },
+                { name: 'Binance Smart Chain', id: 'bsc', explorer: 'https://bscscan.com/tx/' },
+                { name: 'Polygon', id: 'polygon', explorer: 'https://polygonscan.com/tx/' },
+                { name: 'Avalanche', id: 'avalanche', explorer: 'https://snowtrace.io/tx/' },
+                { name: 'Arbitrum', id: 'arbitrum', explorer: 'https://arbiscan.io/tx/' },
+                { name: 'Optimism', id: 'optimism', explorer: 'https://optimistic.etherscan.io/tx/' },
+                { name: 'Base', id: 'base', explorer: 'https://basescan.org/tx/' }
+            ];
+
+            let totalResults = 0;
+
+            for (const chain of chains) {
+                try {
+                    const res = await fetch(`https://deep-index.moralis.io/api/v2.2/${walletAddress}?chain=${chain.id}&format=decimal&order=desc&limit=10`, {
+                        headers: {
+                            'X-API-Key': MORALIS_API_KEY
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.result && data.result.length > 0) {
+                        data.result.forEach(tx => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td><a href="${chain.explorer}${tx.hash}" target="_blank">${tx.hash.slice(0, 10)}...</a></td>
+                                <td>${tx.from_address.slice(0, 8)}...</td>
+                                <td>${tx.to_address ? tx.to_address.slice(0, 8) + '...' : 'N/A'}</td>
+                                <td>${(Number(tx.value) / 10 ** 18).toFixed(4)} ${chain.name === 'Binance Smart Chain' ? 'BNB' : 'ETH'}</td>
+                                <td>${tx.gas_used}</td>
+                                <td>${new Date(tx.block_timestamp).toLocaleString()}</td>
+                            `;
+                            transactionList.appendChild(row);
+                        });
+                        totalResults += data.result.length;
+                    }
+                } catch (err) {
+                    console.error(`${chain.name} থেকে ডেটা আনা যায়নি`, err);
+                }
+            }
+
+            if (totalResults > 0) {
+                transactionTable.style.display = 'table';
+            } else {
+                alert('কোনো লেনদেন পাওয়া যায়নি — হয়তো ওয়ালেটটি নতুন বা অন্য সমস্যার কারণে।');
+            }
+        });
+    </script>
+
+</body>
+</html>
